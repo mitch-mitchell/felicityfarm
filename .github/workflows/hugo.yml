@@ -37,6 +37,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          fetch-depth: 0
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
@@ -50,10 +51,14 @@ jobs:
           hugo \
             --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
+      # Check for potential issues with the generated content
+      - name: Check for problematic files
+        run: |
+          echo "Checking for symlinks or unusual files..."
+          find ./public -type l -o -type p | wc -l
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v2
         with:
-          name: github-pages
           path: ./public
   # Deployment job
   deploy:
